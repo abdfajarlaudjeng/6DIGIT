@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kombinasi Angka Acak 3–6 Kolom</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6">
+    <h1 class="text-2xl font-bold mb-4 text-center">Kombinasi Angka Acak</h1>
+
+    <p class="mb-4 text-gray-600 text-sm text-center">Isi minimal 3 kolom. Setiap input akan diproses per digit (misal: 123 → 1,2,3).</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+      <input id="kolom1" class="border p-2 rounded" type="text" placeholder="Kolom 1 (misal: 123)" />
+      <input id="kolom2" class="border p-2 rounded" type="text" placeholder="Kolom 2 (misal: 456)" />
+      <input id="kolom3" class="border p-2 rounded" type="text" placeholder="Kolom 3 (misal: 789)" />
+      <input id="kolom4" class="border p-2 rounded" type="text" placeholder="Kolom 4 (opsional)" />
+      <input id="kolom5" class="border p-2 rounded" type="text" placeholder="Kolom 5 (opsional)" />
+      <input id="kolom6" class="border p-2 rounded" type="text" placeholder="Kolom 6 (opsional)" />
+    </div>
+
+    <div class="flex gap-4 mb-4">
+      <button onclick="proses()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Proses</button>
+      <button onclick="downloadHasil()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Download Hasil</button>
+    </div>
+
+    <div id="hasil" class="hidden mt-4">
+      <h2 class="text-lg font-semibold mb-2">Hasil Kombinasi:</h2>
+      <textarea id="output" class="w-full h-64 p-2 border rounded font-mono text-sm"></textarea>
+      <p id="jumlahBaris" class="text-sm text-gray-600 mt-2"></p>
+    </div>
+  </div>
+
+  <script>
+    function proses() {
+      const kolomInput = [
+        document.getElementById("kolom1").value,
+        document.getElementById("kolom2").value,
+        document.getElementById("kolom3").value,
+        document.getElementById("kolom4").value,
+        document.getElementById("kolom5").value,
+        document.getElementById("kolom6").value
+      ];
+
+      const kolom = kolomInput
+        .filter(k => k.trim() !== "")
+        .map(k => k.replace(/\s+/g, '').split(''));
+
+      if (kolom.length < 3) {
+        alert("Minimal isi 3 kolom angka.");
+        return;
+      }
+
+      const hasil = kombinasiPenuh(kolom);
+      const hasilText = hasil.map(arr => arr.join("")).join("\n");
+
+      document.getElementById("hasil").classList.remove("hidden");
+      document.getElementById("output").value = hasilText;
+      document.getElementById("jumlahBaris").textContent = `Jumlah kombinasi: ${hasil.length} baris`;
+    }
+
+    function kombinasiPenuh(arrays) {
+      if (arrays.length === 0) return [[]];
+      const [first, ...rest] = arrays;
+      const restComb = kombinasiPenuh(rest);
+      return first.flatMap(el => restComb.map(rc => [el, ...rc]));
+    }
+
+    function downloadHasil() {
+      const text = document.getElementById("output").value;
+      const blob = new Blob([text], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "hasil_kombinasi.txt";
+      link.click();
+    }
+  </script>
+</body>
+</html>
