@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pencocokan Angka: Mistik, Index, Teysen</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+  <div class="max-w-2xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4 text-center">Pencocokan Angka 2D–6D</h1>
+
+    <label for="inputNumber" class="block mb-2 font-semibold">Masukkan Angka (2D–6D):</label>
+    <input id="inputNumber" type="text" maxlength="6" class="w-full p-2 border border-gray-400 rounded mb-4" placeholder="Contoh: 123456" oninput="matchNumbers()">
+
+    <div id="results" class="space-y-4"></div>
+  </div>
+
+  <script>
+    const mistikBaru = { '0': '9', '1': '8', '2': '7', '3': '6', '4': '5', '5': '4', '6': '3', '7': '2', '8': '1', '9': '0' };
+    const mistikLama = { '0': '1', '1': '0', '2': '3', '3': '2', '4': '5', '5': '4', '6': '9', '9': '6', '7': '8', '8': '7' };
+    const index = { '1': '6', '6': '1', '2': '7', '7': '2', '3': '8', '8': '3', '4': '9', '9': '4', '5': '0', '0': '5' };
+    const teysen = { '1': '4', '4': '1', '2': '9', '9': '2', '3': '6', '6': '3', '5': '8', '8': '5', '7': '0', '0': '7' };
+
+    function transform(input, map) {
+      return input.split('').map(d => map[d] || d).join('');
+    }
+
+    function matchNumbers() {
+      const input = document.getElementById('inputNumber').value.trim();
+      if (!/^\d{2,6}$/.test(input)) {
+        document.getElementById('results').innerHTML = '<p class="text-red-600">Masukkan 2 hingga 6 digit angka.</p>';
+        return;
+      }
+
+      const results = `
+        <div class="bg-white p-4 rounded shadow">
+          <p><strong>Angka Asli:</strong> ${input}</p>
+          <p><strong>Mistik Baru:</strong> ${transform(input, mistikBaru)}</p>
+          <p><strong>Mistik Lama:</strong> ${transform(input, mistikLama)}</p>
+          <p><strong>Index:</strong> ${transform(input, index)}</p>
+          <p><strong>Teysen:</strong> ${transform(input, teysen)}</p>
+        </div>
+      `;
+
+      document.getElementById('results').innerHTML = results;
+    }
+  </script>
+</body>
+</html>
