@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pencocokan Angka 2D–6D</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <main class="p-6 max-w-5xl mx-auto space-y-10">
+
+    <!-- Fungsi untuk membuat bagian 2D sampai 6D -->
+    <script>
+      const digitLabels = {
+        '2D': 2,
+        '3D': 3,
+        '4D': 4,
+        '5D': 5,
+        '6D': 6
+      };
+
+      function buatBagian(tipe) {
+        document.write(`
+          <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Kolaborasi Angka ${tipe}</h2>
+            <p class="text-gray-600 mb-2">Masukkan angka ${digitLabels[tipe]} digit, pisahkan dengan tanda * (misal: ${'1'.repeat(digitLabels[tipe])}*${'2'.repeat(digitLabels[tipe])})</p>
+            <div class="flex flex-col gap-4 max-w-xl">
+              <input id="kolomA${tipe}" placeholder="Kolom A (${tipe} SHIO)" class="border px-4 py-2 rounded focus:ring-blue-500" />
+              <input id="kolomB${tipe}" placeholder="Kolom B (${tipe} AS)" class="border px-4 py-2 rounded focus:ring-blue-500" />
+              <input id="kolomC${tipe}" placeholder="Kolom C (${tipe} EKOR Validasi)" class="border px-4 py-2 rounded focus:ring-blue-500" />
+              <input id="filterEkor${tipe}" placeholder="Filter EKOR (maks 6 digit, misal: 12*34)" class="border px-4 py-2 rounded border-yellow-400 focus:ring-yellow-500" />
+              <textarea id="filterAngka${tipe}" placeholder="Filter ANGKA MAIN (masukkan susunan angka, pisah baris)" class="border px-4 py-2 rounded border-green-400 focus:ring-green-500" rows="3"></textarea>
+              <button onclick="cocokkan('${tipe}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Cocokkan ${tipe}</button>
+            </div>
+            <div id="hasil${tipe}" class="mt-4"></div>
+          </section>
+        `);
+      }
+    </script>
+
+    <!-- Buat bagian 2D - 6D -->
+    <script>
+      buatBagian('2D');
+      buatBagian('3D');
+      buatBagian('4D');
+      buatBagian('5D');
+      buatBagian('6D');
+    </script>
+
+  </main>
+
+  <script>
+    function cocokkan(tipe) {
+      const kolomA = document.getElementById('kolomA' + tipe).value.trim().split('*');
+      const kolomB = document.getElementById('kolomB' + tipe).value.trim().split('*');
+      const kolomC = document.getElementById('kolomC' + tipe).value.trim().split('*');
+      const filterEkor = document.getElementById('filterEkor' + tipe).value.trim().split('*');
+      const filterAngka = document.getElementById('filterAngka' + tipe).value.trim().split('\n').map(v => v.trim()).filter(Boolean);
+      const hasilEl = document.getElementById('hasil' + tipe);
+
+      const digit = parseInt(tipe);
+      const regex = new RegExp(`^\\d{${digit}}$`);
+
+      const hasil = kolomA.filter(angka =>
+        kolomB.includes(angka) &&
+        kolomC.includes(angka) &&
+        regex.test(angka) &&
+        (filterEkor.length === 0 || filterEkor.some(ekor => angka.endsWith(ekor))) &&
+        (filterAngka.length === 0 || filterAngka.some(main => angka.includes(main)))
+      );
+
+      if (hasil.length > 0) {
+        hasilEl.innerHTML = `
+          <p class="mb-2 text-green-600">Hasil ${tipe} cocok:</p>
+          <textarea class="w-full border p-2 rounded text-lg font-mono" rows="2" readonly id="textarea${tipe}">${hasil.join('*')}</textarea>
+          <button onclick="salin('${tipe}')" class="mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded">Salin</button>
+        `;
+      } else {
+        hasilEl.innerHTML = `<p class="text-red-500">Tidak ada hasil yang cocok.</p>`;
+      }
+    }
+
+    function salin(tipe) {
+      const textarea = document.getElementById('textarea' + tipe);
+      textarea.select();
+      document.execCommand('copy');
+      alert(`Hasil ${tipe} berhasil disalin!`);
+    }
+  </script>
+</body>
+</html>
