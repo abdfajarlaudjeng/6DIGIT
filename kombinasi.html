@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pencocokan Angka Kombinasi Acak 5 Digit</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f2f2f2; }
+    input, button { width: 100%; margin-top: 10px; padding: 8px; font-size: 16px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .col { flex: 1; min-width: 100px; }
+    #hasil { margin-top: 20px; white-space: pre-wrap; background: #fff; padding: 10px; max-height: 400px; overflow-y: auto; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+  <h2>Input Angka (3–6 Kolom)</h2>
+  <div class="row">
+    <div class="col"><input type="text" id="kolom1" placeholder="Kolom 1 (cth: 1,2,3)" /></div>
+    <div class="col"><input type="text" id="kolom2" placeholder="Kolom 2" /></div>
+    <div class="col"><input type="text" id="kolom3" placeholder="Kolom 3" /></div>
+    <div class="col"><input type="text" id="kolom4" placeholder="Kolom 4 (opsional)" /></div>
+    <div class="col"><input type="text" id="kolom5" placeholder="Kolom 5 (opsional)" /></div>
+    <div class="col"><input type="text" id="kolom6" placeholder="Kolom 6 (opsional)" /></div>
+  </div>
+
+  <button onclick="prosesKombinasi()">🔁 Proses Kombinasi Acak (50 Kombinasi 5 Digit)</button>
+  <button onclick="downloadHasil()">⬇️ Download TXT</button>
+
+  <div id="hasil" class="hidden"></div>
+
+  <script>
+    function getKolomIsi(id) {
+      const val = document.getElementById(id).value.trim();
+      return val ? val.split(',').map(s => s.trim()).filter(s => s !== '') : null;
+    }
+
+    function kombinasi(arrays) {
+      return arrays.reduce((a, b) => a.flatMap(d => b.map(e => d.concat(e))), [[]]);
+    }
+
+    function acakArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function prosesKombinasi() {
+      const kolomIds = ["kolom1", "kolom2", "kolom3", "kolom4", "kolom5", "kolom6"];
+      const kolomData = kolomIds.map(getKolomIsi).filter(Boolean);
+
+      if (kolomData.length < 3) {
+        alert("Minimal isi 3 kolom!");
+        return;
+      }
+
+      const semuaKombinasi = kombinasi(kolomData).map(k => k.join(''));
+      const kombinasiAcak = new Set();
+
+      while (kombinasiAcak.size < 50 && semuaKombinasi.length > 0) {
+        const randIndex = Math.floor(Math.random() * semuaKombinasi.length);
+        const angka = semuaKombinasi[randIndex].split('');
+        acakArray(angka);
+        const limaDigit = angka.join('').substring(0, 5);
+        if (limaDigit.length === 5) kombinasiAcak.add(limaDigit);
+      }
+
+      const hasil = Array.from(kombinasiAcak);
+      document.getElementById("hasil").classList.remove("hidden");
+      document.getElementById("hasil").innerText = hasil.join('\n');
+    }
+
+    function downloadHasil() {
+      const isi = document.getElementById("hasil").innerText;
+      if (!isi) return alert("Belum ada hasil!");
+
+      const blob = new Blob([isi], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kombinasi_acak_5_digit.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>
